@@ -1,0 +1,12 @@
+/* Стилі для анімацій сторінок */
+.page-transition-out {
+    opacity: 0;
+    transform: translateX(100%);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  }
+  
+  .page-transition-in {
+    opacity: 1;
+    transform: translateX(0);
+    transition: opacity 0.5s ease-in, transform 0.5s ease-in;
+  }

@@ -1,138 +1,443 @@
 <!DOCTYPE html>
 <html lang="uk">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Меню | NEON</title>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <script>
-          tailwind.config = {
-            theme: {
-              extend: {
-                colors: {
-                  cosmic: {
-                    900: '#0f172a',
-                    800: '#1e293b',
-                  },
-                  neon: {
-                    cyan: '#00ffff',
-                    pink: '#ff00ff',
-                    purple: '#9d00ff'
-                  }
-                },
-                animation: {
-                  'neon-pulse': 'pulse 3s ease-in-out infinite',
-                  'float': 'float 6s ease-in-out infinite'
-                },
-                keyframes: {
-                  float: {
-                    '0%, 100%': { transform: 'translateY(0)' },
-                    '50%': { transform: 'translateY(-20px)' }
-                  }
-                }
-              }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Меню | NEON</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cosmic: {
+              900: '#0f172a',
+              800: '#1e293b',
+            },
+            neon: {
+              cyan: '#00ffff',
+              pink: '#ff00ff',
+              purple: '#9d00ff'
+            }
+          },
+          animation: {
+            'neon-pulse': 'pulse 3s ease-in-out infinite',
+            'float': 'float 6s ease-in-out infinite'
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-20px)' }
             }
           }
-        </script>
-        <link rel="stylesheet" href="/css/main.css" />
-      </head>
+        }
+      }
+    }
+  </script>
+  <style>
+    .error-message {
+      color: #ff4444;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+      display: none;
+    }
+  </style>
+  
+  <!-- Firebase App (основний SDK) -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <!-- Firebase Authentication -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDcfe3Qiuz2QOr45xX3oP3ZW-O08-f2udg",
+      authDomain: "coffee-b3e1c.firebaseapp.com",
+      projectId: "coffee-b3e1c",
+      storageBucket: "coffee-b3e1c.appspot.com",
+      messagingSenderId: "205271337323",
+      appId: "1:205271337323:web:56fab605972410ef9d242e"
+    };
+
+    // Ініціалізація Firebase
+    firebase.initializeApp(firebaseConfig);
+  </script>
+</head>
 <body class="bg-cosmic-900 text-gray-100 font-sans overflow-x-hidden">
-  <header class="bg-cosmic-900/80 border-b border-neon-cyan/20 p-4 text-center">
-    <h1 class="text-3xl font-bold text-neon-cyan">Меню кав’ярні</h1>
-    <a href="/" class="text-neon-pink underline">← На головну</a>
+
+  <!-- Хедер -->
+  <header class="fixed top-0 left-0 w-full z-50 bg-cosmic-900/80 backdrop-blur-lg border-b border-neon-cyan/20">
+    <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+      <a href="/" class="text-3xl font-bold text-neon-cyan hover:text-neon-pink transition-colors duration-300">
+        NEON
+      </a>
+      <nav class="hidden md:flex space-x-8">
+        <a href="/" class="nav-link text-gray-300 hover:text-neon-cyan">Головна</a>
+        <a href="/menu.html" class="nav-link text-neon-cyan hover:text-neon-pink">Меню</a>
+        <a href="/gallery.html" class="nav-link text-gray-300 hover:text-neon-cyan">Галерея</a>
+        <a href="/contacts.html" class="nav-link text-gray-300 hover:text-neon-cyan">Контакти</a>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <div id="userInfo" class="hidden flex items-center space-x-2">
+          <span id="userNickname" class="text-neon-cyan"></span>
+          <span class="text-gray-400">|</span>
+        </div>
+        <button id="authBtn" onclick="toggleAuthModal()" class="text-neon-cyan hover:text-neon-pink transition font-semibold">
+          Увійти
+        </button>
+        <button id="logoutBtn" onclick="handleLogout()" class="text-neon-pink hover:text-neon-cyan transition font-semibold hidden">
+          Вийти
+        </button>
+        <button onclick="toggleCart()" class="relative px-4 py-2 bg-neon-pink text-cosmic-900 font-bold rounded hover:bg-neon-cyan transition md:ml-4">
+          🛒
+        </button>
+      </div>
+    </div>
   </header>
 
-  <main class="container mx-auto px-6 py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-    <!-- Картки товарів -->
-    <div class="bg-cosmic-800 rounded-xl p-6 shadow-lg hover:shadow-neon-cyan transition">
-      <img src="/images/latte.jpg" alt="Лате" class="w-full h-48 object-cover rounded-lg mb-4">
-      <h2 class="text-2xl font-bold text-neon-cyan mb-2">Лате</h2>
-      <p class="text-gray-400 mb-2">Ніжна кава з молоком</p>
-      <p class="text-neon-pink font-bold mb-4">65 грн</p>
-      <button onclick="addToCart('Лате', 65)" class="px-4 py-2 bg-neon-cyan text-cosmic-900 font-bold rounded hover:bg-neon-pink transition">Додати до замовлення</button>
+  <!-- Модальне вікно авторизації -->
+  <div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 hidden">
+    <div class="bg-cosmic-800 p-8 rounded-2xl w-full max-w-md text-white relative">
+      <button onclick="toggleAuthModal()" class="absolute top-3 right-4 text-gray-400 hover:text-white text-2xl">&times;</button>
+      <h2 class="text-2xl font-bold mb-4" id="authTitle">Увійти</h2>
+      
+      <div id="errorContainer" class="mb-4 text-red-500 text-sm hidden"></div>
+
+      <input type="email" id="email" placeholder="Email" class="w-full mb-3 p-2 rounded bg-cosmic-900 border border-neon-cyan text-white focus:outline-none" />
+      <div id="emailError" class="error-message">Будь ласка, введіть коректний email</div>
+
+      <input type="password" id="password" placeholder="Пароль" class="w-full mb-4 p-2 rounded bg-cosmic-900 border border-neon-cyan text-white focus:outline-none" />
+      <div id="passwordError" class="error-message">Пароль повинен містити щонайменше 6 символів</div>
+
+      <button onclick="handleAuth()" class="w-full bg-neon-cyan text-black font-bold py-2 rounded-full mb-3" id="authButton">Продовжити</button>
+      <p class="text-sm text-center text-gray-400">
+        <span id="toggleText">Ще не маєш акаунту?</span>
+        <button onclick="toggleForm()" class="text-neon-cyan underline ml-1" id="toggleButton">Зареєструйся</button>
+      </p>
     </div>
-  
+  </div>
+
+  <!-- Головний контент -->
+  <main class="relative z-10 pt-24 pb-16 min-h-screen px-6">
+    <section class="container mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+     <!-- Картки товарів -->
     <div class="bg-cosmic-800 rounded-xl p-6 shadow-lg hover:shadow-neon-cyan transition">
-      <img src="/images/cappuccino.jpg" alt="Капучино" class="w-full h-48 object-cover rounded-lg mb-4">
-      <h2 class="text-2xl font-bold text-neon-cyan mb-2">Капучино</h2>
-      <p class="text-gray-400 mb-2">Класична кава з пінкою</p>
-      <p class="text-neon-pink font-bold mb-4">60 грн</p>
-      <button onclick="addToCart('Капучино', 60)" class="px-4 py-2 bg-neon-cyan text-cosmic-900 font-bold rounded hover:bg-neon-pink transition">Додати до замовлення</button>
-    </div>
-  
-    <div class="bg-cosmic-800 rounded-xl p-6 shadow-lg hover:shadow-neon-cyan transition">
-      <img src="/images/espresso.jpg" alt="Еспресо" class="w-full h-48 object-cover rounded-lg mb-4">
-      <h2 class="text-2xl font-bold text-neon-cyan mb-2">Еспресо</h2>
-      <p class="text-gray-400 mb-2">Міцна кава для справжніх поціновувачів</p>
-      <p class="text-neon-pink font-bold mb-4">55 грн</p>
-      <button onclick="addToCart('Еспресо', 55)" class="px-4 py-2 bg-neon-cyan text-cosmic-900 font-bold rounded hover:bg-neon-pink transition">Додати до замовлення</button>
-    </div>
-  
-    <div class="bg-cosmic-800 rounded-xl p-6 shadow-lg hover:shadow-neon-cyan transition">
-      <img src="/images/americano.jpg" alt="Американо" class="w-full h-48 object-cover rounded-lg mb-4">
-      <h2 class="text-2xl font-bold text-neon-cyan mb-2">Американо</h2>
-      <p class="text-gray-400 mb-2">Розбавлений еспресо, м’який смак</p>
-      <p class="text-neon-pink font-bold mb-4">50 грн</p>
-      <button onclick="addToCart('Американо', 50)" class="px-4 py-2 bg-neon-cyan text-cosmic-900 font-bold rounded hover:bg-neon-pink transition">Додати до замовлення</button>
-    </div>
-  
-    <div class="bg-cosmic-800 rounded-xl p-6 shadow-lg hover:shadow-neon-cyan transition">
-      <img src="/images/mocha.jpg" alt="Мокачино" class="w-full h-48 object-cover rounded-lg mb-4">
-      <h2 class="text-2xl font-bold text-neon-cyan mb-2">Мокачино</h2>
-      <p class="text-gray-400 mb-2">Кава з шоколадом</p>
-      <p class="text-neon-pink font-bold mb-4">70 грн</p>
-      <button onclick="addToCart('Мокачино', 70)" class="px-4 py-2 bg-neon-cyan text-cosmic-900 font-bold rounded hover:bg-neon-pink transition">Додати до замовлення</button>
-    </div>
-  
-    <div class="bg-cosmic-800 rounded-xl p-6 shadow-lg hover:shadow-neon-cyan transition">
-      <img src="/images/flatwhite.jpg" alt="Флет Вайт" class="w-full h-48 object-cover rounded-lg mb-4">
-      <h2 class="text-2xl font-bold text-neon-cyan mb-2">Флет Вайт</h2>
-      <p class="text-gray-400 mb-2">Ідеальний баланс еспресо і молока</p>
-      <p class="text-neon-pink font-bold mb-4">65 грн</p>
-      <button onclick="addToCart('Флет Вайт', 65)" class="px-4 py-2 bg-neon-cyan text-cosmic-900 font-bold rounded hover:bg-neon-pink transition">Додати до замовлення</button>
-    </div>
-  
-    <div class="bg-cosmic-800 rounded-xl p-6 shadow-lg hover:shadow-neon-cyan transition">
-      <img src="/images/raf.jpg" alt="Раф кава" class="w-full h-48 object-cover rounded-lg mb-4">
-      <h2 class="text-2xl font-bold text-neon-cyan mb-2">Раф кава</h2>
-      <p class="text-gray-400 mb-2">Кава з вершками та ваніллю</p>
-      <p class="text-neon-pink font-bold mb-4">75 грн</p>
-      <button onclick="addToCart('Раф кава', 75)" class="px-4 py-2 bg-neon-cyan text-cosmic-900 font-bold rounded hover:bg-neon-pink transition">Додати до замовлення</button>
-    </div>
-  
-    <div class="bg-cosmic-800 rounded-xl p-6 shadow-lg hover:shadow-neon-cyan transition">
-      <img src="/images/coldbrew.jpg" alt="Cold Brew" class="w-full h-48 object-cover rounded-lg mb-4">
-      <h2 class="text-2xl font-bold text-neon-cyan mb-2">Cold Brew</h2>
-      <p class="text-gray-400 mb-2">Холодна кава тривалого настоювання</p>
-      <p class="text-neon-pink font-bold mb-4">80 грн</p>
-      <button onclick="addToCart('Cold Brew', 80)" class="px-4 py-2 bg-neon-cyan text-cosmic-900 font-bold rounded hover:bg-neon-pink transition">Додати до замовлення</button>
-    </div>
-  
-    <div class="bg-cosmic-800 rounded-xl p-6 shadow-lg hover:shadow-neon-cyan transition">
-      <img src="/images/tiramisu.jpg" alt="Тірамісу" class="w-full h-48 object-cover rounded-lg mb-4">
-      <h2 class="text-2xl font-bold text-neon-cyan mb-2">Тірамісу</h2>
-      <p class="text-gray-400 mb-2">Найпопулярніший італійський десерт</p>
-      <p class="text-neon-pink font-bold mb-4">85 грн</p>
-      <button onclick="addToCart('Тірамісу', 85)" class="px-4 py-2 bg-neon-cyan text-cosmic-900 font-bold rounded hover:bg-neon-pink transition">Додати до замовлення</button>
-    </div>
-  
-    <div class="bg-cosmic-800 rounded-xl p-6 shadow-lg hover:shadow-neon-cyan transition">
-      <img src="/images/cheesecake.jpg" alt="Чізкейк" class="w-full h-48 object-cover rounded-lg mb-4">
-      <h2 class="text-2xl font-bold text-neon-cyan mb-2">Чізкейк</h2>
-      <p class="text-gray-400 mb-2">Класичний ванільний чізкейк</p>
-      <p class="text-neon-pink font-bold mb-4">80 грн</p>
-      <button onclick="addToCart('Чізкейк', 80)" class="px-4 py-2 bg-neon-cyan text-cosmic-900 font-bold rounded hover:bg-neon-pink transition">Додати до замовлення</button>
-    </div>
+        <img src="/images/latte.jpg" alt="Лате" class="w-full h-48 object-cover rounded-lg mb-4">
+        <h2 class="text-2xl font-bold text-neon-cyan mb-2">Лате</h2>
+        <p class="text-gray-400 mb-2">Ніжна кава з молоком</p>
+        <p class="text-neon-pink font-bold mb-4">65 грн</p>
+        <button onclick="addToCart('Лате', 65)" class="px-4 py-2 bg-neon-cyan text-cosmic-900 font-bold rounded hover:bg-neon-pink transition">Додати до замовлення</button>
+      </div>
+    
+      <div class="bg-cosmic-800 rounded-xl p-6 shadow-lg hover:shadow-neon-cyan transition">
+        <img src="/images/cappuccino.jpg" alt="Капучино" class="w-full h-48 object-cover rounded-lg mb-4">
+        <h2 class="text-2xl font-bold text-neon-cyan mb-2">Капучино</h2>
+        <p class="text-gray-400 mb-2">Класична кава з пінкою</p>
+        <p class="text-neon-pink font-bold mb-4">60 грн</p>
+        <button onclick="addToCart('Капучино', 60)" class="px-4 py-2 bg-neon-cyan text-cosmic-900 font-bold rounded hover:bg-neon-pink transition">Додати до замовлення</button>
+      </div>
+    
+      <div class="bg-cosmic-800 rounded-xl p-6 shadow-lg hover:shadow-neon-cyan transition">
+        <img src="/images/espresso.jpg" alt="Еспресо" class="w-full h-48 object-cover rounded-lg mb-4">
+        <h2 class="text-2xl font-bold text-neon-cyan mb-2">Еспресо</h2>
+        <p class="text-gray-400 mb-2">Міцна кава для справжніх поціновувачів</p>
+        <p class="text-neon-pink font-bold mb-4">55 грн</p>
+        <button onclick="addToCart('Еспресо', 55)" class="px-4 py-2 bg-neon-cyan text-cosmic-900 font-bold rounded hover:bg-neon-pink transition">Додати до замовлення</button>
+      </div>
+    
+      <div class="bg-cosmic-800 rounded-xl p-6 shadow-lg hover:shadow-neon-cyan transition">
+        <img src="/images/americano.jpg" alt="Американо" class="w-full h-48 object-cover rounded-lg mb-4">
+        <h2 class="text-2xl font-bold text-neon-cyan mb-2">Американо</h2>
+        <p class="text-gray-400 mb-2">Розбавлений еспресо, м’який смак</p>
+        <p class="text-neon-pink font-bold mb-4">50 грн</p>
+        <button onclick="addToCart('Американо', 50)" class="px-4 py-2 bg-neon-cyan text-cosmic-900 font-bold rounded hover:bg-neon-pink transition">Додати до замовлення</button>
+      </div>
+    
+      <div class="bg-cosmic-800 rounded-xl p-6 shadow-lg hover:shadow-neon-cyan transition">
+        <img src="/images/mocha.jpg" alt="Мокачино" class="w-full h-48 object-cover rounded-lg mb-4">
+        <h2 class="text-2xl font-bold text-neon-cyan mb-2">Мокачино</h2>
+        <p class="text-gray-400 mb-2">Кава з шоколадом</p>
+        <p class="text-neon-pink font-bold mb-4">70 грн</p>
+        <button onclick="addToCart('Мокачино', 70)" class="px-4 py-2 bg-neon-cyan text-cosmic-900 font-bold rounded hover:bg-neon-pink transition">Додати до замовлення</button>
+      </div>
+    
+      <div class="bg-cosmic-800 rounded-xl p-6 shadow-lg hover:shadow-neon-cyan transition">
+        <img src="/images/flatwhite.jpg" alt="Флет Вайт" class="w-full h-48 object-cover rounded-lg mb-4">
+        <h2 class="text-2xl font-bold text-neon-cyan mb-2">Флет Вайт</h2>
+        <p class="text-gray-400 mb-2">Ідеальний баланс еспресо і молока</p>
+        <p class="text-neon-pink font-bold mb-4">65 грн</p>
+        <button onclick="addToCart('Флет Вайт', 65)" class="px-4 py-2 bg-neon-cyan text-cosmic-900 font-bold rounded hover:bg-neon-pink transition">Додати до замовлення</button>
+      </div>
+    
+      <div class="bg-cosmic-800 rounded-xl p-6 shadow-lg hover:shadow-neon-cyan transition">
+        <img src="/images/raf.jpg" alt="Раф кава" class="w-full h-48 object-cover rounded-lg mb-4">
+        <h2 class="text-2xl font-bold text-neon-cyan mb-2">Раф кава</h2>
+        <p class="text-gray-400 mb-2">Кава з вершками та ваніллю</p>
+        <p class="text-neon-pink font-bold mb-4">75 грн</p>
+        <button onclick="addToCart('Раф кава', 75)" class="px-4 py-2 bg-neon-cyan text-cosmic-900 font-bold rounded hover:bg-neon-pink transition">Додати до замовлення</button>
+      </div>
+    
+      <div class="bg-cosmic-800 rounded-xl p-6 shadow-lg hover:shadow-neon-cyan transition">
+        <img src="/images/coldbrew.jpg" alt="Cold Brew" class="w-full h-48 object-cover rounded-lg mb-4">
+        <h2 class="text-2xl font-bold text-neon-cyan mb-2">Cold Brew</h2>
+        <p class="text-gray-400 mb-2">Холодна кава тривалого настоювання</p>
+        <p class="text-neon-pink font-bold mb-4">80 грн</p>
+        <button onclick="addToCart('Cold Brew', 80)" class="px-4 py-2 bg-neon-cyan text-cosmic-900 font-bold rounded hover:bg-neon-pink transition">Додати до замовлення</button>
+      </div>
+    
+      <div class="bg-cosmic-800 rounded-xl p-6 shadow-lg hover:shadow-neon-cyan transition">
+        <img src="/images/tiramisu.jpg" alt="Тірамісу" class="w-full h-48 object-cover rounded-lg mb-4">
+        <h2 class="text-2xl font-bold text-neon-cyan mb-2">Тірамісу</h2>
+        <p class="text-gray-400 mb-2">Найпопулярніший італійський десерт</p>
+        <p class="text-neon-pink font-bold mb-4">85 грн</p>
+        <button onclick="addToCart('Тірамісу', 85)" class="px-4 py-2 bg-neon-cyan text-cosmic-900 font-bold rounded hover:bg-neon-pink transition">Додати до замовлення</button>
+      </div>
+    
+      <div class="bg-cosmic-800 rounded-xl p-6 shadow-lg hover:shadow-neon-cyan transition">
+        <img src="/images/cheesecake.jpg" alt="Чізкейк" class="w-full h-48 object-cover rounded-lg mb-4">
+        <h2 class="text-2xl font-bold text-neon-cyan mb-2">Чізкейк</h2>
+        <p class="text-gray-400 mb-2">Класичний ванільний чізкейк</p>
+        <p class="text-neon-pink font-bold mb-4">80 грн</p>
+        <button onclick="addToCart('Чізкейк', 80)" class="px-4 py-2 bg-neon-cyan text-cosmic-900 font-bold rounded hover:bg-neon-pink transition">Додати до замовлення</button>
+      </div>
+    </section>
   </main>
-  
+
+  <!-- Модальне вікно кошика -->
+  <div id="cartModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+    <div class="bg-cosmic-800 p-6 rounded-xl w-full max-w-md text-left relative">
+      <button onclick="toggleCart()" class="absolute top-2 right-2 text-neon-pink text-xl">✖</button>
+      <h2 class="text-2xl text-neon-cyan font-bold mb-4">Ваше замовлення</h2>
+      <ul id="cartItems" class="mb-4 space-y-2 text-gray-200"></ul>
+      <p id="total" class="text-neon-pink font-bold mb-4"></p>
+      <button onclick="proceedToCheckout()" class="px-4 py-2 bg-neon-cyan text-cosmic-900 font-bold rounded hover:bg-neon-pink transition w-full mb-2">Оформити замовлення</button>
+      <button onclick="clearCart()" class="px-4 py-2 bg-cosmic-700 text-gray-200 font-bold rounded hover:bg-cosmic-600 transition w-full">Очистити кошик</button>
+    </div>
+  </div>
 
   <script>
+    // Стан форми (логін/реєстрація)
+    let isLoginForm = true;
+    
+    // Елементи DOM
+    const authModal = document.getElementById('authModal');
+    const authTitle = document.getElementById('authTitle');
+    const toggleText = document.getElementById('toggleText');
+    const toggleButton = document.getElementById('toggleButton');
+    const authButton = document.getElementById('authButton');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const emailError = document.getElementById('emailError');
+    const passwordError = document.getElementById('passwordError');
+    const errorContainer = document.getElementById('errorContainer');
+    const authBtn = document.getElementById('authBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const userInfo = document.getElementById('userInfo');
+    const userNickname = document.getElementById('userNickname');
+
+    // Перевірка стану авторизації при завантаженні сторінки
+    document.addEventListener('DOMContentLoaded', () => {
+      checkAuthState();
+    });
+
+    // Перевірка стану авторизації
+    function checkAuthState() {
+      firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+          // Користувач увійшов
+          authBtn.classList.add('hidden');
+          logoutBtn.classList.remove('hidden');
+          userInfo.classList.remove('hidden');
+          
+          // Відображаємо email або ім'я користувача, якщо воно є
+          const displayName = user.displayName || user.email.split('@')[0];
+          userNickname.textContent = displayName;
+          
+          if (authModal) authModal.classList.add('hidden');
+        } else {
+          authBtn.classList.remove('hidden');
+          logoutBtn.classList.add('hidden');
+          userInfo.classList.add('hidden');
+        }
+      });
+    }
+
+    // Перемикання модального вікна
+    function toggleAuthModal() {
+      authModal.classList.toggle('hidden');
+      resetErrors();
+    }
+
+    // Перемикання між формами логіну та реєстрації
+    function toggleForm() {
+      isLoginForm = !isLoginForm;
+      
+      if (isLoginForm) {
+        authTitle.textContent = 'Увійти';
+        toggleText.textContent = 'Ще не маєш акаунту?';
+        toggleButton.textContent = 'Зареєструйся';
+        authButton.textContent = 'Увійти';
+      } else {
+        authTitle.textContent = 'Реєстрація';
+        toggleText.textContent = 'Вже маєш акаунт?';
+        toggleButton.textContent = 'Увійти';
+        authButton.textContent = 'Зареєструватися';
+      }
+      
+      resetErrors();
+    }
+
+    // Обробка авторизації/реєстрації
+    function handleAuth() {
+      const email = emailInput.value;
+      const password = passwordInput.value;
+      
+      if (!validateForm(email, password)) return;
+      
+      if (isLoginForm) {
+        firebase.auth().signInWithEmailAndPassword(email, password)
+          .then(() => toggleAuthModal())
+          .catch(error => showError(getAuthErrorMessage(error)));
+      } else {
+        firebase.auth().createUserWithEmailAndPassword(email, password)
+          .then(() => toggleAuthModal())
+          .catch(error => showError(getAuthErrorMessage(error)));
+      }
+    }
+
+    // Вихід з акаунту
+    function handleLogout() {
+      firebase.auth().signOut()
+        .then(() => checkAuthState())
+        .catch(error => console.error('Помилка при виході:', error));
+    }
+
+    // Валідація форми
+    function validateForm(email, password) {
+      let isValid = true;
+      
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        emailError.style.display = 'block';
+        isValid = false;
+      } else {
+        emailError.style.display = 'none';
+      }
+      
+      if (password.length < 6) {
+        passwordError.style.display = 'block';
+        isValid = false;
+      } else {
+        passwordError.style.display = 'none';
+      }
+      
+      return isValid;
+    }
+
+    // Скидання помилок
+    function resetErrors() {
+      emailError.style.display = 'none';
+      passwordError.style.display = 'none';
+      errorContainer.classList.add('hidden');
+      errorContainer.textContent = '';
+    }
+
+    // Показ помилки
+    function showError(message) {
+      errorContainer.textContent = message;
+      errorContainer.classList.remove('hidden');
+    }
+
+    // Переклад повідомлень про помилки Firebase
+    function getAuthErrorMessage(error) {
+      switch (error.code) {
+        case 'auth/invalid-email': return 'Невірний формат email';
+        case 'auth/user-disabled': return 'Цей акаунт було вимкнено';
+        case 'auth/user-not-found': return 'Користувача з таким email не знайдено';
+        case 'auth/wrong-password': return 'Невірний пароль';
+        case 'auth/email-already-in-use': return 'Цей email вже використовується';
+        case 'auth/weak-password': return 'Пароль повинен містити щонайменше 6 символів';
+        case 'auth/operation-not-allowed': return 'Ця операція не дозволена';
+        default: return 'Сталася помилка. Спробуйте ще раз.';
+      }
+    }
+
+    // Кошик
     function addToCart(name, price) {
-      const item = { name, price };
+      checkAuthBeforeOrder()
+        .then(() => {
+          const item = { name, price };
+          const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+          cart.push(item);
+          localStorage.setItem('cart', JSON.stringify(cart));
+          updateCartModal();
+        })
+        .catch(() => {
+          toggleAuthModal();
+        });
+    }
+
+    function toggleCart() {
+      const modal = document.getElementById('cartModal');
+      modal.classList.toggle('hidden');
+      if (!modal.classList.contains('hidden')) {
+        updateCartModal();
+      }
+    }
+
+    function updateCartModal() {
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      cart.push(item);
-      localStorage.setItem('cart', JSON.stringify(cart));
-      alert(`${name} додано до кошика!`);
+      const cartList = document.getElementById('cartItems');
+      const totalText = document.getElementById('total');
+      cartList.innerHTML = '';
+      let total = 0;
+
+      if (cart.length === 0) {
+        cartList.innerHTML = '<li class="text-gray-400">Кошик порожній</li>';
+        totalText.textContent = '';
+      } else {
+        cart.forEach(item => {
+          const li = document.createElement('li');
+          li.textContent = `${item.name} — ${item.price} грн`;
+          cartList.appendChild(li);
+          total += item.price;
+        });
+        totalText.textContent = `Загалом: ${total} грн`;
+      }
+    }
+
+    function clearCart() {
+      localStorage.removeItem('cart');
+      updateCartModal();
+    }
+
+    function proceedToCheckout() {
+      checkAuthBeforeOrder()
+        .then((user) => {
+          const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+          if (cart.length === 0) {
+            alert('Кошик порожній!');
+            return;
+          }
+          // Тут можна додати логіку оформлення замовлення
+          alert(`Замовлення оформлено! Дякуємо, ${user.displayName || user.email.split('@')[0]}!`);
+          clearCart();
+          toggleCart();
+        })
+        .catch(() => {
+          toggleAuthModal();
+          toggleCart();
+        });
+    }
+
+    // Перевірка авторизації перед замовленням
+    function checkAuthBeforeOrder() {
+      return new Promise((resolve, reject) => {
+        const user = firebase.auth().currentUser;
+        if (user) {
+          resolve(user);
+        } else {
+          reject('Користувач не авторизований');
+        }
+      });
     }
   </script>
 </body>

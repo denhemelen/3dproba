@@ -34,27 +34,202 @@
       }
     }
   </script>
-  <link href="/css/main.css" rel="stylesheet">
+  <style>
+    /* Gooey кнопка */
+    .c-button {
+      color: #000;
+      font-weight: 700;
+      font-size: 16px;
+      text-decoration: none;
+      padding: 0.9em 1.8em;
+      cursor: pointer;
+      display: inline-block;
+      vertical-align: middle;
+      position: relative;
+      z-index: 1;
+    }
+
+    .c-button--gooey {
+      color: #06c8d9;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      border: 4px solid #06c8d9;
+      border-radius: 9999px;
+      position: relative;
+      transition: all 700ms ease;
+      overflow: hidden;
+    }
+
+    .c-button--gooey .c-button__blobs {
+      height: 100%;
+      width: 100%;
+      filter: url(#goo);
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: -1;
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+
+    .c-button--gooey .c-button__blobs div {
+      background-color: #06c8d9;
+      width: 34%;
+      height: 100%;
+      border-radius: 9999px;
+      position: absolute;
+      transform: scale(1.4) translateY(125%) translateZ(0);
+      transition: all 700ms ease;
+    }
+
+    .c-button--gooey .c-button__blobs div:nth-child(1) {
+      left: -5%;
+    }
+    .c-button--gooey .c-button__blobs div:nth-child(2) {
+      left: 30%;
+      transition-delay: 60ms;
+    }
+    .c-button--gooey .c-button__blobs div:nth-child(3) {
+      left: 66%;
+      transition-delay: 25ms;
+    }
+
+    .c-button--gooey:hover {
+      color: #fff;
+    }
+
+    .c-button--gooey:hover .c-button__blobs div {
+      transform: scale(1.4) translateY(0) translateZ(0);
+    }
+
+    .video-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: -1;
+    }
+
+    .video-background video {
+      min-width: 100%;
+      min-height: 100%;
+      object-fit: cover;
+    }
+
+    .error-message {
+      color: #ff4444;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+      display: none;
+    }
+
+    .loader {
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top: 4px solid #00ffff;
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+      display: none;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+
+  <!-- Firebase App (основний SDK) -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <!-- Firebase Authentication -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDcfe3Qiuz2QOr45xX3oP3ZW-O08-f2udg",
+      authDomain: "coffee-b3e1c.firebaseapp.com",
+      projectId: "coffee-b3e1c",
+      storageBucket: "coffee-b3e1c.appspot.com",
+      messagingSenderId: "205271337323",
+      appId: "1:205271337323:web:56fab605972410ef9d242e"
+    };
+
+    // Ініціалізація Firebase
+    firebase.initializeApp(firebaseConfig);
+  </script>
 </head>
 <body class="bg-cosmic-900 text-gray-100 font-sans overflow-x-hidden">
+
+  <div class="video-background">
+    <video autoplay muted loop playsinline>
+      <source src="/images/istockphoto-1454183630-640_adpp_is.mp4" type="video/mp4">
+      Ваш браузер не підтримує відео.
+    </video>
+  </div>
+
+  <!-- Модальне вікно авторизації -->
+  <div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 hidden">
+    <div class="bg-cosmic-800 p-8 rounded-2xl w-full max-w-md text-white relative">
+      <button onclick="toggleAuthModal()" class="absolute top-3 right-4 text-gray-400 hover:text-white text-2xl">&times;</button>
+      <h2 class="text-2xl font-bold mb-4" id="authTitle">Увійти</h2>
+      
+      <div id="errorContainer" class="mb-4 text-red-500 text-sm hidden"></div>
+
+      <!-- Поле для імені (тільки при реєстрації) -->
+      <div id="nameField" class="hidden">
+        <input type="text" id="displayName" placeholder="Ваше ім'я" class="w-full mb-3 p-2 rounded bg-cosmic-900 border border-neon-cyan text-white focus:outline-none" />
+        <div id="nameError" class="error-message">Будь ласка, введіть ваше ім'я</div>
+      </div>
+
+      <input type="email" id="email" placeholder="Email" class="w-full mb-3 p-2 rounded bg-cosmic-900 border border-neon-cyan text-white focus:outline-none" />
+      <div id="emailError" class="error-message">Будь ласка, введіть коректний email</div>
+
+      <input type="password" id="password" placeholder="Пароль" class="w-full mb-4 p-2 rounded bg-cosmic-900 border border-neon-cyan text-white focus:outline-none" />
+      <div id="passwordError" class="error-message">Пароль повинен містити щонайменше 6 символів</div>
+
+      <button onclick="handleAuth()" class="w-full bg-neon-cyan text-black font-bold py-2 rounded-full mb-3 flex justify-center items-center gap-2" id="authButton">
+        <span id="authButtonText">Продовжити</span>
+        <div id="authSpinner" class="loader"></div>
+      </button>
+      <p class="text-sm text-center text-gray-400">
+        <span id="toggleText">Ще не маєш акаунту?</span>
+        <button onclick="toggleForm()" class="text-neon-cyan underline ml-1" id="toggleButton">Зареєструйся</button>
+      </p>
+    </div>
+  </div>
+
   <!-- Анімований фон -->
   <div id="particles-js" class="fixed inset-0 z-0"></div>
 
-  <!-- Хедер -->
+  <!-- Хедер з іменем користувача -->
   <header class="fixed top-0 left-0 w-full z-50 bg-cosmic-900/80 backdrop-blur-lg border-b border-neon-cyan/20">
     <div class="container mx-auto px-6 py-4 flex justify-between items-center">
       <a href="/" class="text-3xl font-bold text-neon-cyan hover:text-neon-pink transition-colors duration-300">
         NEON
       </a>
-      <nav class="hidden md:flex space-x-8">
+      <nav class="hidden md:flex space-x-8" id="nav-links">
         <a href="/" class="nav-link text-neon-cyan hover:text-neon-pink">Головна</a>
         <a href="/menu.html" class="nav-link text-gray-300 hover:text-neon-cyan">Меню</a>
         <a href="/gallery.html" class="nav-link text-gray-300 hover:text-neon-cyan">Галерея</a>
         <a href="/contacts.html" class="nav-link text-gray-300 hover:text-neon-cyan">Контакти</a>
       </nav>
-      <button class="md:hidden text-2xl text-neon-cyan">
-        <i class="fas fa-bars"></i>
-      </button>
+      <div class="flex items-center space-x-4">
+        <div id="userInfo" class="hidden flex items-center space-x-2">
+          <span id="userNickname" class="text-neon-cyan"></span>
+          <span class="text-gray-400">|</span>
+        </div>
+        <button id="authBtn" onclick="toggleAuthModal()" class="text-neon-cyan hover:text-neon-pink transition font-semibold">
+          Увійти
+        </button>
+        <button id="logoutBtn" onclick="handleLogout()" class="text-neon-pink hover:text-neon-cyan transition font-semibold hidden">
+          Вийти
+        </button>
+        <button class="md:hidden text-2xl text-neon-cyan" id="burger-btn">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
     </div>
   </header>
 
@@ -70,8 +245,15 @@
         <p class="text-xl mb-8 text-gray-400 max-w-lg">
           Найкращі сорти кави з різних куточків галактики, приготовлені з використанням технологій майбутнього
         </p>
-        <a href="/menu.html" class="inline-block px-8 py-3 bg-gradient-to-r from-neon-cyan to-neon-purple rounded-full font-bold text-cosmic-900 hover:shadow-lg hover:shadow-neon-cyan/30 transition-all duration-300 transform hover:-translate-y-1">
+
+        <!-- Gooey стиль для кнопки "Переглянути меню" -->
+        <a href="/menu.html" class="c-button c-button--gooey">
           Переглянути меню
+          <div class="c-button__blobs">
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
         </a>
       </div>
 
@@ -91,10 +273,12 @@
           <p class="mt-2 text-gray-400">вул. Космічна, 42, Київ</p>
         </div>
         <div class="flex space-x-6 text-2xl">
-          <a href="#" class="text-gray-400 hover:text-neon-cyan transition-colors duration-300">
+          <!-- Іконка Instagram -->
+          <a href="https://www.instagram.com/yourprofile" target="_blank" class="text-gray-400 hover:text-neon-cyan transition-colors duration-300">
             <i class="fab fa-instagram"></i>
           </a>
-          <a href="#" class="text-gray-400 hover:text-neon-cyan transition-colors duration-300">
+          <!-- Іконка Telegram -->
+          <a href="https://t.me/yourprofile" target="_blank" class="text-gray-400 hover:text-neon-cyan transition-colors duration-300">
             <i class="fab fa-telegram"></i>
           </a>
         </div>
@@ -102,16 +286,257 @@
     </div>
   </footer>
 
+  <!-- SVG фільтр для gooey ефекту -->
+  <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="display: block; height: 0; width: 0;">
+    <defs>
+      <filter id="goo">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"></feGaussianBlur>
+        <feColorMatrix in="blur" mode="matrix"
+          values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo"></feColorMatrix>
+        <feBlend in="SourceGraphic" in2="goo"></feBlend>
+      </filter>
+    </defs>
+  </svg>
+
   <!-- Скрипти -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
   <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-
   <script src="/js/three-app.js"></script>
   <script src="/js/particles-config.js"></script>
   <script src="/js/router.js" type="module"></script>
   <script src="/js/main.js" type="module"></script>
+
+  <script>
+    // Стан форми (логін/реєстрація)
+    let isLoginForm = true;
+    
+    // Елементи DOM
+    const authModal = document.getElementById('authModal');
+    const authTitle = document.getElementById('authTitle');
+    const toggleText = document.getElementById('toggleText');
+    const toggleButton = document.getElementById('toggleButton');
+    const authButton = document.getElementById('authButton');
+    const authButtonText = document.getElementById('authButtonText');
+    const authSpinner = document.getElementById('authSpinner');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const displayNameInput = document.getElementById('displayName');
+    const emailError = document.getElementById('emailError');
+    const passwordError = document.getElementById('passwordError');
+    const nameError = document.getElementById('nameError');
+    const errorContainer = document.getElementById('errorContainer');
+    const authBtn = document.getElementById('authBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const userInfo = document.getElementById('userInfo');
+    const userNickname = document.getElementById('userNickname');
+    const nameField = document.getElementById('nameField');
+
+    // Перевірка стану авторизації при завантаженні сторінки
+    document.addEventListener('DOMContentLoaded', () => {
+      checkAuthState();
+    });
+
+    // Перевірка стану авторизації
+    function checkAuthState() {
+      firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+          // Користувач увійшов
+          authBtn.classList.add('hidden');
+          logoutBtn.classList.remove('hidden');
+          userInfo.classList.remove('hidden');
+          
+          // Відображаємо ім'я користувача або email
+          const displayName = user.displayName || user.email.split('@')[0];
+          userNickname.textContent = displayName;
+          
+          if (authModal) authModal.classList.add('hidden');
+        } else {
+          // Користувач вийшов
+          authBtn.classList.remove('hidden');
+          logoutBtn.classList.add('hidden');
+          userInfo.classList.add('hidden');
+        }
+      });
+    }
+
+    // Перемикання модального вікна
+    function toggleAuthModal() {
+      authModal.classList.toggle('hidden');
+      resetErrors();
+    }
+
+    // Перемикання між формами логіну та реєстрації
+    function toggleForm() {
+      isLoginForm = !isLoginForm;
+      
+      if (isLoginForm) {
+        nameField.classList.add('hidden');
+        authTitle.textContent = 'Увійти';
+        toggleText.textContent = 'Ще не маєш акаунту?';
+        toggleButton.textContent = 'Зареєструйся';
+        authButtonText.textContent = 'Увійти';
+      } else {
+        nameField.classList.remove('hidden');
+        authTitle.textContent = 'Реєстрація';
+        toggleText.textContent = 'Вже маєш акаунт?';
+        toggleButton.textContent = 'Увійти';
+        authButtonText.textContent = 'Зареєструватися';
+      }
+      
+      resetErrors();
+    }
+
+    // Встановлення стану завантаження
+    function setLoading(isLoading) {
+      if (isLoading) {
+        authButton.disabled = true;
+        authButtonText.textContent = '';
+        authSpinner.style.display = 'block';
+      } else {
+        authButton.disabled = false;
+        authButtonText.textContent = isLoginForm ? 'Увійти' : 'Зареєструватися';
+        authSpinner.style.display = 'none';
+      }
+    }
+
+    // Обробка авторизації/реєстрації
+    function handleAuth() {
+      const email = emailInput.value;
+      const password = passwordInput.value;
+      const displayName = displayNameInput ? displayNameInput.value.trim() : '';
+      
+      // Валідація форми
+      if (!validateForm(email, password, displayName)) {
+        return;
+      }
+      
+      setLoading(true);
+      
+      if (isLoginForm) {
+        // Логін
+        firebase.auth().signInWithEmailAndPassword(email, password)
+          .then(() => {
+            toggleAuthModal();
+          })
+          .catch(error => {
+            showError(getAuthErrorMessage(error));
+          })
+          .finally(() => {
+            setLoading(false);
+          });
+      } else {
+        // Реєстрація
+        firebase.auth().createUserWithEmailAndPassword(email, password)
+          .then((userCredential) => {
+            // Оновлюємо профіль користувача з іменем
+            return userCredential.user.updateProfile({
+              displayName: displayName || email.split('@')[0]
+            });
+          })
+          .then(() => {
+            toggleAuthModal();
+          })
+          .catch(error => {
+            showError(getAuthErrorMessage(error));
+          })
+          .finally(() => {
+            setLoading(false);
+          });
+      }
+    }
+
+    // Вихід з акаунту
+    function handleLogout() {
+      firebase.auth().signOut()
+        .then(() => {
+          // Оновлюємо інтерфейс після виходу
+          checkAuthState();
+        })
+        .catch(error => {
+          console.error('Помилка при виході:', error);
+        });
+    }
+
+    // Валідація форми
+    function validateForm(email, password, displayName = '') {
+      let isValid = true;
+      
+      // Валідація імені (тільки для реєстрації)
+      if (!isLoginForm && displayName === '') {
+        nameError.style.display = 'block';
+        isValid = false;
+      } else {
+        nameError.style.display = 'none';
+      }
+      
+      // Валідація email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        emailError.style.display = 'block';
+        isValid = false;
+      } else {
+        emailError.style.display = 'none';
+      }
+      
+      // Валідація паролю
+      if (password.length < 6) {
+        passwordError.style.display = 'block';
+        isValid = false;
+      } else {
+        passwordError.style.display = 'none';
+      }
+      
+      return isValid;
+    }
+
+    // Скидання помилок
+    function resetErrors() {
+      nameError.style.display = 'none';
+      emailError.style.display = 'none';
+      passwordError.style.display = 'none';
+      errorContainer.classList.add('hidden');
+      errorContainer.textContent = '';
+    }
+
+    // Показ помилки
+    function showError(message) {
+      errorContainer.textContent = message;
+      errorContainer.classList.remove('hidden');
+    }
+
+    // Переклад повідомлень про помилки Firebase
+    function getAuthErrorMessage(error) {
+      switch (error.code) {
+        case 'auth/invalid-email':
+          return 'Невірний формат email';
+        case 'auth/user-disabled':
+          return 'Цей акаунт було вимкнено';
+        case 'auth/user-not-found':
+          return 'Користувача з таким email не знайдено';
+        case 'auth/wrong-password':
+          return 'Невірний пароль';
+        case 'auth/email-already-in-use':
+          return 'Цей email вже використовується';
+        case 'auth/weak-password':
+          return 'Пароль повинен містити щонайменше 6 символів';
+        case 'auth/operation-not-allowed':
+          return 'Ця операція не дозволена';
+        default:
+          return 'Сталася помилка. Спробуйте ще раз.';
+      }
+    }
+
+    // Бургер меню
+    const burgerBtn = document.getElementById('burger-btn');
+    const navLinks = document.getElementById('nav-links');
+    if (burgerBtn && navLinks) {
+      burgerBtn.addEventListener('click', () => {
+        navLinks.classList.toggle('hidden');
+      });
+    }
+  </script>
 </body>
 </html>

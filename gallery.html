@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="uk" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Галерея | NEON</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cosmic: {
+              900: '#0f172a',
+              800: '#1e293b',
+            },
+            neon: {
+              cyan: '#00ffff',
+              pink: '#ff00ff',
+              purple: '#9d00ff'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link href="/css/main.css" rel="stylesheet">
+</head>
+<body class="bg-cosmic-900 text-gray-100 font-sans overflow-x-hidden">
+  <!-- Хедер -->
+  <header class="fixed top-0 left-0 w-full z-50 bg-cosmic-900/80 backdrop-blur-lg border-b border-neon-cyan/20">
+    <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+      <a href="/" class="text-3xl font-bold text-neon-cyan hover:text-neon-pink transition-colors duration-300">
+        NEON
+      </a>
+      <nav class="hidden md:flex space-x-8">
+        <a href="/" class="nav-link text-gray-300 hover:text-neon-cyan">Головна</a>
+        <a href="/menu.html" class="nav-link text-gray-300 hover:text-neon-cyan">Меню</a>
+        <a href="/gallery.html" class="nav-link text-neon-cyan">Галерея</a>
+        <a href="/contacts.html" class="nav-link text-gray-300 hover:text-neon-cyan">Контакти</a>
+      </nav>
+      <button class="md:hidden text-2xl text-neon-cyan">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Контент -->
+  <main class="pt-24 pb-16 relative z-10 container mx-auto px-6 min-h-screen">
+    <h1 class="text-5xl font-bold mb-12 text-center text-neon-pink">Галерея</h1>
+    
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <!-- Картинка -->
+      <div class="group overflow-hidden rounded-xl border border-neon-cyan shadow-lg hover:shadow-neon-cyan/30 transition-all duration-300">
+        <img src="/coffe to files gallery.html/coffee1.jpg" alt="Кава 1" class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500">
+      </div>
+      <div class="group overflow-hidden rounded-xl border border-neon-pink shadow-lg hover:shadow-neon-pink/30 transition-all duration-300">
+        <img src="/coffe to files gallery.html/coffee2.webp" alt="Кава 2" class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500">
+      </div>
+      <div class="group overflow-hidden rounded-xl border border-neon-purple shadow-lg hover:shadow-neon-purple/30 transition-all duration-300">
+        <img src="/coffe to files gallery.html/coffee3.webp" alt="Кава 3" class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500">
+      </div>
+      <!-- Додай ще -->
+    </div>
+  </main>
+
+  <!-- Футер -->
+  <footer class="relative z-10 py-12 border-t border-gray-800 bg-cosmic-900/50">
+    <div class="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
+      <div class="mb-6 md:mb-0">
+        <span class="text-2xl font-bold text-neon-cyan">NEON COFFEE</span>
+        <p class="mt-2 text-gray-400">вул. Космічна, 42, Київ</p>
+      </div>
+      <div class="flex space-x-6 text-2xl">
+        <a href="#" class="text-gray-400 hover:text-neon-cyan transition-colors duration-300">
+          <i class="fab fa-instagram"></i>
+        </a>
+        <a href="#" class="text-gray-400 hover:text-neon-cyan transition-colors duration-300">
+          <i class="fab fa-telegram"></i>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Скрипти -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+  <script src="/js/router.js" type="module"></script>
+</body>
+</html>

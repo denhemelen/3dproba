@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="uk" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Контакти | NEON</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cosmic: {
+              900: '#0f172a',
+              800: '#1e293b',
+            },
+            neon: {
+              cyan: '#00ffff',
+              pink: '#ff00ff',
+              purple: '#9d00ff'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link href="/css/main.css" rel="stylesheet">
+</head>
+<body class="bg-cosmic-900 text-gray-100 font-sans overflow-x-hidden">
+  <!-- Хедер -->
+  <header class="fixed top-0 left-0 w-full z-50 bg-cosmic-900/80 backdrop-blur-lg border-b border-neon-cyan/20">
+    <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+      <a href="/" class="text-3xl font-bold text-neon-cyan hover:text-neon-pink transition-colors duration-300">
+        NEON
+      </a>
+      <nav class="hidden md:flex space-x-8">
+        <a href="/" class="nav-link text-gray-300 hover:text-neon-cyan">Головна</a>
+        <a href="/menu.html" class="nav-link text-gray-300 hover:text-neon-cyan">Меню</a>
+        <a href="/gallery.html" class="nav-link text-gray-300 hover:text-neon-cyan">Галерея</a>
+        <a href="/contacts.html" class="nav-link text-neon-cyan">Контакти</a>
+      </nav>
+      <button class="md:hidden text-2xl text-neon-cyan">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Контент -->
+  <main class="pt-24 pb-16 container mx-auto px-6 relative z-10">
+    <h1 class="text-5xl font-bold mb-12 text-center text-neon-purple">Контакти</h1>
+
+    <!-- Карта -->
+    <div class="mb-12 overflow-hidden rounded-xl border-2 border-neon-cyan shadow-lg">
+      <iframe 
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2539.7769379435463!2d30.5234!3d50.4501!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x472a9a61cb8b3e69%3A0x123456789abcdef!2z0JrQu9C40L3QuNC60LA!5e0!3m2!1suk!2sua!4v0000000000" 
+        width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy">
+      </iframe>
+    </div>
+
+    <!-- Контактна форма + Інфо -->
+    <div class="grid md:grid-cols-2 gap-12">
+      <!-- Форма -->
+      <form class="space-y-6">
+        <div>
+          <label class="block text-gray-300 mb-2" for="name">Ім’я</label>
+          <input type="text" id="name" name="name" class="w-full px-4 py-3 rounded-lg bg-cosmic-800 text-white border border-neon-cyan focus:outline-none focus:ring-2 focus:ring-neon-pink"/>
+        </div>
+        <div>
+          <label class="block text-gray-300 mb-2" for="email">Email</label>
+          <input type="email" id="email" name="email" class="w-full px-4 py-3 rounded-lg bg-cosmic-800 text-white border border-neon-cyan focus:outline-none focus:ring-2 focus:ring-neon-pink"/>
+        </div>
+        <div>
+          <label class="block text-gray-300 mb-2" for="message">Повідомлення</label>
+          <textarea id="message" name="message" rows="5" class="w-full px-4 py-3 rounded-lg bg-cosmic-800 text-white border border-neon-cyan focus:outline-none focus:ring-2 focus:ring-neon-pink"></textarea>
+        </div>
+        <button type="submit" class="px-6 py-3 bg-gradient-to-r from-neon-cyan to-neon-pink text-cosmic-900 font-bold rounded-full hover:shadow-lg hover:shadow-neon-pink/40 transition-all duration-300">
+          Надіслати
+        </button>
+      </form>
+
+      <!-- Інформація -->
+      <div class="space-y-6">
+        <div>
+          <h2 class="text-xl font-bold text-neon-cyan mb-2">Адреса</h2>
+          <p class="text-gray-400">вул. Космічна, 42, Київ</p>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-neon-cyan mb-2">Телефон</h2>
+          <p class="text-gray-400">+380 (67) 123-45-67</p>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-neon-cyan mb-2">Години роботи</h2>
+          <p class="text-gray-400">Пн - Нд: 08:00 – 22:00</p>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-neon-cyan mb-2">Соцмережі</h2>
+          <div class="flex space-x-4 text-2xl">
+            <a href="#" class="text-gray-400 hover:text-neon-cyan"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="text-gray-400 hover:text-neon-cyan"><i class="fab fa-telegram"></i></a>
+            <a href="#" class="text-gray-400 hover:text-neon-cyan"><i class="fab fa-facebook"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Футер -->
+  <footer class="relative z-10 py-12 border-t border-gray-800 bg-cosmic-900/50">
+    <div class="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
+      <div class="mb-6 md:mb-0">
+        <span class="text-2xl font-bold text-neon-cyan">NEON COFFEE</span>
+        <p class="mt-2 text-gray-400">вул. Космічна, 42, Київ</p>
+      </div>
+      <div class="flex space-x-6 text-2xl">
+        <a href="#" class="text-gray-400 hover:text-neon-cyan"><i class="fab fa-instagram"></i></a>
+        <a href="#" class="text-gray-400 hover:text-neon-cyan"><i class="fab fa-telegram"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Скрипти -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+  <script src="/js/router.js" type="module"></script>
+</body>
+</html>
