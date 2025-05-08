@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="uk" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEON | Космічна кава</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cosmic: {
+              900: '#0f172a',
+              800: '#1e293b',
+            },
+            neon: {
+              cyan: '#00ffff',
+              pink: '#ff00ff',
+              purple: '#9d00ff'
+            }
+          },
+          animation: {
+            'neon-pulse': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'float': 'float 6s ease-in-out infinite'
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-20px)' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link href="/css/main.css" rel="stylesheet">
+</head>
+<body class="bg-cosmic-900 text-gray-100 font-sans overflow-x-hidden">
+  <!-- Анімований фон -->
+  <div id="particles-js" class="fixed inset-0 z-0"></div>
+
+  <!-- Хедер -->
+  <header class="fixed top-0 left-0 w-full z-50 bg-cosmic-900/80 backdrop-blur-lg border-b border-neon-cyan/20">
+    <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+      <a href="/" class="text-3xl font-bold text-neon-cyan hover:text-neon-pink transition-colors duration-300">
+        NEON
+      </a>
+      <nav class="hidden md:flex space-x-8">
+        <a href="/" class="nav-link text-neon-cyan hover:text-neon-pink">Головна</a>
+        <a href="/menu.html" class="nav-link text-gray-300 hover:text-neon-cyan">Меню</a>
+        <a href="/gallery.html" class="nav-link text-gray-300 hover:text-neon-cyan">Галерея</a>
+        <a href="/contacts.html" class="nav-link text-gray-300 hover:text-neon-cyan">Контакти</a>
+      </nav>
+      <button class="md:hidden text-2xl text-neon-cyan">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Головний контент -->
+  <main class="relative z-10 pt-24 pb-16 min-h-screen page-transition">
+    <section class="container mx-auto px-6 flex flex-col md:flex-row items-center">
+      <div class="md:w-1/2 mb-12 md:mb-0">
+        <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+          <span class="block text-neon-cyan">Космічна</span>
+          <span class="block text-neon-pink">кава</span>
+          <span class="block text-neon-purple">майбутнього</span>
+        </h1>
+        <p class="text-xl mb-8 text-gray-400 max-w-lg">
+          Найкращі сорти кави з різних куточків галактики, приготовлені з використанням технологій майбутнього
+        </p>
+        <a href="/menu.html" class="inline-block px-8 py-3 bg-gradient-to-r from-neon-cyan to-neon-purple rounded-full font-bold text-cosmic-900 hover:shadow-lg hover:shadow-neon-cyan/30 transition-all duration-300 transform hover:-translate-y-1">
+          Переглянути меню
+        </a>
+      </div>
+
+      <!-- 3D контейнер -->
+      <div class="md:w-1/2 flex justify-center">
+        <div id="3d-container" class="fixed top-0 right-0 w-full md:w-1/2 h-screen z-0"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Футер -->
+  <footer class="relative z-10 py-12 border-t border-gray-800 bg-cosmic-900/50">
+    <div class="container mx-auto px-6">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-6 md:mb-0">
+          <span class="text-2xl font-bold text-neon-cyan">NEON COFFEE</span>
+          <p class="mt-2 text-gray-400">вул. Космічна, 42, Київ</p>
+        </div>
+        <div class="flex space-x-6 text-2xl">
+          <a href="#" class="text-gray-400 hover:text-neon-cyan transition-colors duration-300">
+            <i class="fab fa-instagram"></i>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-neon-cyan transition-colors duration-300">
+            <i class="fab fa-telegram"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Скрипти -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+
+  <script src="/js/three-app.js"></script>
+  <script src="/js/particles-config.js"></script>
+  <script src="/js/router.js" type="module"></script>
+  <script src="/js/main.js" type="module"></script>
+</body>
+</html>

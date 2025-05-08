@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="uk">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Меню | NEON</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+          tailwind.config = {
+            theme: {
+              extend: {
+                colors: {
+                  cosmic: {
+                    900: '#0f172a',
+                    800: '#1e293b',
+                  },
+                  neon: {
+                    cyan: '#00ffff',
+                    pink: '#ff00ff',
+                    purple: '#9d00ff'
+                  }
+                },
+                animation: {
+                  'neon-pulse': 'pulse 3s ease-in-out infinite',
+                  'float': 'float 6s ease-in-out infinite'
+                },
+                keyframes: {
+                  float: {
+                    '0%, 100%': { transform: 'translateY(0)' },
+                    '50%': { transform: 'translateY(-20px)' }
+                  }
+                }
+              }
+            }
+          }
+        </script>
+        <link rel="stylesheet" href="/css/main.css" />
+      </head>
+<body class="bg-cosmic-900 text-gray-100 font-sans overflow-x-hidden">
+  <header class="bg-cosmic-900/80 border-b border-neon-cyan/20 p-4 text-center">
+    <h1 class="text-3xl font-bold text-neon-cyan">Меню кав’ярні</h1>
+    <a href="/" class="text-neon-pink underline">← На головну</a>
+  </header>
+
+  <main class="container mx-auto px-6 py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+    <!-- Картки товарів -->
+    <div class="bg-cosmic-800 rounded-xl p-6 shadow-lg hover:shadow-neon-cyan transition">
+      <img src="/images/latte.jpg" alt="Лате" class="w-full h-48 object-cover rounded-lg mb-4">
+      <h2 class="text-2xl font-bold text-neon-cyan mb-2">Лате</h2>
+      <p class="text-gray-400 mb-2">Ніжна кава з молоком</p>
+      <p class="text-neon-pink font-bold mb-4">65 грн</p>
+      <button onclick="addToCart('Лате', 65)" class="px-4 py-2 bg-neon-cyan text-cosmic-900 font-bold rounded hover:bg-neon-pink transition">Додати до замовлення</button>
+    </div>
+  
+    <div class="bg-cosmic-800 rounded-xl p-6 shadow-lg hover:shadow-neon-cyan transition">
+      <img src="/images/cappuccino.jpg" alt="Капучино" class="w-full h-48 object-cover rounded-lg mb-4">
+      <h2 class="text-2xl font-bold text-neon-cyan mb-2">Капучино</h2>
+      <p class="text-gray-400 mb-2">Класична кава з пінкою</p>
+      <p class="text-neon-pink font-bold mb-4">60 грн</p>
+      <button onclick="addToCart('Капучино', 60)" class="px-4 py-2 bg-neon-cyan text-cosmic-900 font-bold rounded hover:bg-neon-pink transition">Додати до замовлення</button>
+    </div>
+  
+    <div class="bg-cosmic-800 rounded-xl p-6 shadow-lg hover:shadow-neon-cyan transition">
+      <img src="/images/espresso.jpg" alt="Еспресо" class="w-full h-48 object-cover rounded-lg mb-4">
+      <h2 class="text-2xl font-bold text-neon-cyan mb-2">Еспресо</h2>
+      <p class="text-gray-400 mb-2">Міцна кава для справжніх поціновувачів</p>
+      <p class="text-neon-pink font-bold mb-4">55 грн</p>
+      <button onclick="addToCart('Еспресо', 55)" class="px-4 py-2 bg-neon-cyan text-cosmic-900 font-bold rounded hover:bg-neon-pink transition">Додати до замовлення</button>
+    </div>
+  
+    <div class="bg-cosmic-800 rounded-xl p-6 shadow-lg hover:shadow-neon-cyan transition">
+      <img src="/images/americano.jpg" alt="Американо" class="w-full h-48 object-cover rounded-lg mb-4">
+      <h2 class="text-2xl font-bold text-neon-cyan mb-2">Американо</h2>
+      <p class="text-gray-400 mb-2">Розбавлений еспресо, м’який смак</p>
+      <p class="text-neon-pink font-bold mb-4">50 грн</p>
+      <button onclick="addToCart('Американо', 50)" class="px-4 py-2 bg-neon-cyan text-cosmic-900 font-bold rounded hover:bg-neon-pink transition">Додати до замовлення</button>
+    </div>
+  
+    <div class="bg-cosmic-800 rounded-xl p-6 shadow-lg hover:shadow-neon-cyan transition">
+      <img src="/images/mocha.jpg" alt="Мокачино" class="w-full h-48 object-cover rounded-lg mb-4">
+      <h2 class="text-2xl font-bold text-neon-cyan mb-2">Мокачино</h2>
+      <p class="text-gray-400 mb-2">Кава з шоколадом</p>
+      <p class="text-neon-pink font-bold mb-4">70 грн</p>
+      <button onclick="addToCart('Мокачино', 70)" class="px-4 py-2 bg-neon-cyan text-cosmic-900 font-bold rounded hover:bg-neon-pink transition">Додати до замовлення</button>
+    </div>
+  
+    <div class="bg-cosmic-800 rounded-xl p-6 shadow-lg hover:shadow-neon-cyan transition">
+      <img src="/images/flatwhite.jpg" alt="Флет Вайт" class="w-full h-48 object-cover rounded-lg mb-4">
+      <h2 class="text-2xl font-bold text-neon-cyan mb-2">Флет Вайт</h2>
+      <p class="text-gray-400 mb-2">Ідеальний баланс еспресо і молока</p>
+      <p class="text-neon-pink font-bold mb-4">65 грн</p>
+      <button onclick="addToCart('Флет Вайт', 65)" class="px-4 py-2 bg-neon-cyan text-cosmic-900 font-bold rounded hover:bg-neon-pink transition">Додати до замовлення</button>
+    </div>
+  
+    <div class="bg-cosmic-800 rounded-xl p-6 shadow-lg hover:shadow-neon-cyan transition">
+      <img src="/images/raf.jpg" alt="Раф кава" class="w-full h-48 object-cover rounded-lg mb-4">
+      <h2 class="text-2xl font-bold text-neon-cyan mb-2">Раф кава</h2>
+      <p class="text-gray-400 mb-2">Кава з вершками та ваніллю</p>
+      <p class="text-neon-pink font-bold mb-4">75 грн</p>
+      <button onclick="addToCart('Раф кава', 75)" class="px-4 py-2 bg-neon-cyan text-cosmic-900 font-bold rounded hover:bg-neon-pink transition">Додати до замовлення</button>
+    </div>
+  
+    <div class="bg-cosmic-800 rounded-xl p-6 shadow-lg hover:shadow-neon-cyan transition">
+      <img src="/images/coldbrew.jpg" alt="Cold Brew" class="w-full h-48 object-cover rounded-lg mb-4">
+      <h2 class="text-2xl font-bold text-neon-cyan mb-2">Cold Brew</h2>
+      <p class="text-gray-400 mb-2">Холодна кава тривалого настоювання</p>
+      <p class="text-neon-pink font-bold mb-4">80 грн</p>
+      <button onclick="addToCart('Cold Brew', 80)" class="px-4 py-2 bg-neon-cyan text-cosmic-900 font-bold rounded hover:bg-neon-pink transition">Додати до замовлення</button>
+    </div>
+  
+    <div class="bg-cosmic-800 rounded-xl p-6 shadow-lg hover:shadow-neon-cyan transition">
+      <img src="/images/tiramisu.jpg" alt="Тірамісу" class="w-full h-48 object-cover rounded-lg mb-4">
+      <h2 class="text-2xl font-bold text-neon-cyan mb-2">Тірамісу</h2>
+      <p class="text-gray-400 mb-2">Найпопулярніший італійський десерт</p>
+      <p class="text-neon-pink font-bold mb-4">85 грн</p>
+      <button onclick="addToCart('Тірамісу', 85)" class="px-4 py-2 bg-neon-cyan text-cosmic-900 font-bold rounded hover:bg-neon-pink transition">Додати до замовлення</button>
+    </div>
+  
+    <div class="bg-cosmic-800 rounded-xl p-6 shadow-lg hover:shadow-neon-cyan transition">
+      <img src="/images/cheesecake.jpg" alt="Чізкейк" class="w-full h-48 object-cover rounded-lg mb-4">
+      <h2 class="text-2xl font-bold text-neon-cyan mb-2">Чізкейк</h2>
+      <p class="text-gray-400 mb-2">Класичний ванільний чізкейк</p>
+      <p class="text-neon-pink font-bold mb-4">80 грн</p>
+      <button onclick="addToCart('Чізкейк', 80)" class="px-4 py-2 bg-neon-cyan text-cosmic-900 font-bold rounded hover:bg-neon-pink transition">Додати до замовлення</button>
+    </div>
+  </main>
+  
+
+  <script>
+    function addToCart(name, price) {
+      const item = { name, price };
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      cart.push(item);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      alert(`${name} додано до кошика!`);
+    }
+  </script>
+</body>
+</html>
