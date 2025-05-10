@@ -41,6 +41,29 @@
       margin-top: 0.25rem;
       display: none;
     }
+    .loader {
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top: 4px solid #00ffff;
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+      display: none;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .cart-item {
+      transition: transform 0.3s ease-in-out;
+    }
+    .nav-btn {
+      transition: opacity 0.3s ease;
+    }
+    .nav-btn:hover {
+      opacity: 0.8;
+    }
   </style>
   
   <!-- Firebase App (основний SDK) -->
@@ -88,6 +111,7 @@
         </button>
         <button onclick="toggleCart()" class="relative px-4 py-2 bg-neon-pink text-cosmic-900 font-bold rounded hover:bg-neon-cyan transition md:ml-4">
           🛒
+          <span id="cartCount" class="absolute -top-2 -right-2 bg-neon-cyan text-cosmic-900 text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
         </button>
       </div>
     </div>
@@ -101,13 +125,22 @@
       
       <div id="errorContainer" class="mb-4 text-red-500 text-sm hidden"></div>
 
+      <!-- Поле для імені (тільки при реєстрації) -->
+      <div id="nameField" class="hidden">
+        <input type="text" id="displayName" placeholder="Ваше ім'я" class="w-full mb-3 p-2 rounded bg-cosmic-900 border border-neon-cyan text-white focus:outline-none" />
+        <div id="nameError" class="error-message">Будь ласка, введіть ваше ім'я</div>
+      </div>
+
       <input type="email" id="email" placeholder="Email" class="w-full mb-3 p-2 rounded bg-cosmic-900 border border-neon-cyan text-white focus:outline-none" />
       <div id="emailError" class="error-message">Будь ласка, введіть коректний email</div>
 
       <input type="password" id="password" placeholder="Пароль" class="w-full mb-4 p-2 rounded bg-cosmic-900 border border-neon-cyan text-white focus:outline-none" />
       <div id="passwordError" class="error-message">Пароль повинен містити щонайменше 6 символів</div>
 
-      <button onclick="handleAuth()" class="w-full bg-neon-cyan text-black font-bold py-2 rounded-full mb-3" id="authButton">Продовжити</button>
+      <button onclick="handleAuth()" class="w-full bg-neon-cyan text-black font-bold py-2 rounded-full mb-3 flex justify-center items-center gap-2" id="authButton">
+        <span id="authButtonText">Продовжити</span>
+        <div id="authSpinner" class="loader"></div>
+      </button>
       <p class="text-sm text-center text-gray-400">
         <span id="toggleText">Ще не маєш акаунту?</span>
         <button onclick="toggleForm()" class="text-neon-cyan underline ml-1" id="toggleButton">Зареєструйся</button>
@@ -118,8 +151,8 @@
   <!-- Головний контент -->
   <main class="relative z-10 pt-24 pb-16 min-h-screen px-6">
     <section class="container mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-     <!-- Картки товарів -->
-    <div class="bg-cosmic-800 rounded-xl p-6 shadow-lg hover:shadow-neon-cyan transition">
+      <!-- Картки товарів -->
+      <div class="bg-cosmic-800 rounded-xl p-6 shadow-lg hover:shadow-neon-cyan transition">
         <img src="/images/latte.jpg" alt="Лате" class="w-full h-48 object-cover rounded-lg mb-4">
         <h2 class="text-2xl font-bold text-neon-cyan mb-2">Лате</h2>
         <p class="text-gray-400 mb-2">Ніжна кава з молоком</p>
@@ -146,7 +179,7 @@
       <div class="bg-cosmic-800 rounded-xl p-6 shadow-lg hover:shadow-neon-cyan transition">
         <img src="/images/americano.jpg" alt="Американо" class="w-full h-48 object-cover rounded-lg mb-4">
         <h2 class="text-2xl font-bold text-neon-cyan mb-2">Американо</h2>
-        <p class="text-gray-400 mb-2">Розбавлений еспресо, м’який смак</p>
+        <p class="text-gray-400 mb-2">Розбавлений еспресо, м'який смак</p>
         <p class="text-neon-pink font-bold mb-4">50 грн</p>
         <button onclick="addToCart('Американо', 50)" class="px-4 py-2 bg-neon-cyan text-cosmic-900 font-bold rounded hover:bg-neon-pink transition">Додати до замовлення</button>
       </div>
@@ -206,10 +239,31 @@
     <div class="bg-cosmic-800 p-6 rounded-xl w-full max-w-md text-left relative">
       <button onclick="toggleCart()" class="absolute top-2 right-2 text-neon-pink text-xl">✖</button>
       <h2 class="text-2xl text-neon-cyan font-bold mb-4">Ваше замовлення</h2>
-      <ul id="cartItems" class="mb-4 space-y-2 text-gray-200"></ul>
-      <p id="total" class="text-neon-pink font-bold mb-4"></p>
-      <button onclick="proceedToCheckout()" class="px-4 py-2 bg-neon-cyan text-cosmic-900 font-bold rounded hover:bg-neon-pink transition w-full mb-2">Оформити замовлення</button>
-      <button onclick="clearCart()" class="px-4 py-2 bg-cosmic-700 text-gray-200 font-bold rounded hover:bg-cosmic-600 transition w-full">Очистити кошик</button>
+      
+      <!-- Контейнер для гортання товарів -->
+      <div class="relative overflow-hidden mb-4 h-64">
+        <div id="cartItemsContainer" class="flex transition-transform duration-300 ease-in-out h-full">
+          <!-- Товари будуть додаватись сюди -->
+        </div>
+        
+        <!-- Кнопки навігації -->
+        <button id="prevItem" class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-cosmic-700/80 text-neon-cyan rounded-full w-8 h-8 flex items-center justify-center hover:bg-cosmic-600 nav-btn hidden">
+          &lt;
+        </button>
+        <button id="nextItem" class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-cosmic-700/80 text-neon-cyan rounded-full w-8 h-8 flex items-center justify-center hover:bg-cosmic-600 nav-btn hidden">
+          &gt;
+        </button>
+      </div>
+      
+      <p id="currentPosition" class="text-center text-gray-400 mb-2">0/0</p>
+      <p id="total" class="text-neon-pink font-bold mb-4 text-center text-xl"></p>
+      
+      <button onclick="proceedToCheckout()" class="px-4 py-2 bg-neon-cyan text-cosmic-900 font-bold rounded hover:bg-neon-pink transition w-full mb-2" id="checkoutBtn">
+        Оформити замовлення
+      </button>
+      <button onclick="clearCart()" class="px-4 py-2 bg-cosmic-700 text-gray-200 font-bold rounded hover:bg-cosmic-600 transition w-full">
+        Очистити кошик
+      </button>
     </div>
   </div>
 
@@ -223,31 +277,41 @@
     const toggleText = document.getElementById('toggleText');
     const toggleButton = document.getElementById('toggleButton');
     const authButton = document.getElementById('authButton');
+    const authButtonText = document.getElementById('authButtonText');
+    const authSpinner = document.getElementById('authSpinner');
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
+    const displayNameInput = document.getElementById('displayName');
     const emailError = document.getElementById('emailError');
     const passwordError = document.getElementById('passwordError');
+    const nameError = document.getElementById('nameError');
     const errorContainer = document.getElementById('errorContainer');
     const authBtn = document.getElementById('authBtn');
     const logoutBtn = document.getElementById('logoutBtn');
     const userInfo = document.getElementById('userInfo');
     const userNickname = document.getElementById('userNickname');
+    const nameField = document.getElementById('nameField');
+    const cartCount = document.getElementById('cartCount');
+    const checkoutBtn = document.getElementById('checkoutBtn');
+
+    // Змінні для гортання товарів
+    let currentItemIndex = 0;
+    let cartItems = [];
 
     // Перевірка стану авторизації при завантаженні сторінки
     document.addEventListener('DOMContentLoaded', () => {
       checkAuthState();
+      updateCartCount();
     });
 
     // Перевірка стану авторизації
     function checkAuthState() {
       firebase.auth().onAuthStateChanged(user => {
         if (user) {
-          // Користувач увійшов
           authBtn.classList.add('hidden');
           logoutBtn.classList.remove('hidden');
           userInfo.classList.remove('hidden');
           
-          // Відображаємо email або ім'я користувача, якщо воно є
           const displayName = user.displayName || user.email.split('@')[0];
           userNickname.textContent = displayName;
           
@@ -271,48 +335,98 @@
       isLoginForm = !isLoginForm;
       
       if (isLoginForm) {
+        nameField.classList.add('hidden');
         authTitle.textContent = 'Увійти';
         toggleText.textContent = 'Ще не маєш акаунту?';
         toggleButton.textContent = 'Зареєструйся';
-        authButton.textContent = 'Увійти';
+        authButtonText.textContent = 'Увійти';
       } else {
+        nameField.classList.remove('hidden');
         authTitle.textContent = 'Реєстрація';
         toggleText.textContent = 'Вже маєш акаунт?';
         toggleButton.textContent = 'Увійти';
-        authButton.textContent = 'Зареєструватися';
+        authButtonText.textContent = 'Зареєструватися';
       }
       
       resetErrors();
+    }
+
+    // Встановлення стану завантаження
+    function setLoading(isLoading) {
+      if (isLoading) {
+        authButton.disabled = true;
+        authButtonText.textContent = '';
+        authSpinner.style.display = 'block';
+      } else {
+        authButton.disabled = false;
+        authButtonText.textContent = isLoginForm ? 'Увійти' : 'Зареєструватися';
+        authSpinner.style.display = 'none';
+      }
     }
 
     // Обробка авторизації/реєстрації
     function handleAuth() {
       const email = emailInput.value;
       const password = passwordInput.value;
+      const displayName = displayNameInput ? displayNameInput.value.trim() : '';
       
-      if (!validateForm(email, password)) return;
+      if (!validateForm(email, password, displayName)) {
+        return;
+      }
+      
+      setLoading(true);
       
       if (isLoginForm) {
         firebase.auth().signInWithEmailAndPassword(email, password)
-          .then(() => toggleAuthModal())
-          .catch(error => showError(getAuthErrorMessage(error)));
+          .then(() => {
+            toggleAuthModal();
+          })
+          .catch(error => {
+            showError(getAuthErrorMessage(error));
+          })
+          .finally(() => {
+            setLoading(false);
+          });
       } else {
         firebase.auth().createUserWithEmailAndPassword(email, password)
-          .then(() => toggleAuthModal())
-          .catch(error => showError(getAuthErrorMessage(error)));
+          .then((userCredential) => {
+            return userCredential.user.updateProfile({
+              displayName: displayName || email.split('@')[0]
+            });
+          })
+          .then(() => {
+            toggleAuthModal();
+          })
+          .catch(error => {
+            showError(getAuthErrorMessage(error));
+          })
+          .finally(() => {
+            setLoading(false);
+          });
       }
     }
 
     // Вихід з акаунту
     function handleLogout() {
       firebase.auth().signOut()
-        .then(() => checkAuthState())
-        .catch(error => console.error('Помилка при виході:', error));
+        .then(() => {
+          checkAuthState();
+        })
+        .catch(error => {
+          console.error('Помилка при виході:', error);
+        });
     }
 
     // Валідація форми
-    function validateForm(email, password) {
+    function validateForm(email, password, displayName = '') {
       let isValid = true;
+      
+      if (!isLoginForm && displayName === '') {
+        nameError.style.display = 'block';
+        isValid = false;
+      } else {
+        nameError.style.display = 'none';
+      }
       
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
@@ -334,6 +448,7 @@
 
     // Скидання помилок
     function resetErrors() {
+      nameError.style.display = 'none';
       emailError.style.display = 'none';
       passwordError.style.display = 'none';
       errorContainer.classList.add('hidden');
@@ -369,6 +484,7 @@
           cart.push(item);
           localStorage.setItem('cart', JSON.stringify(cart));
           updateCartModal();
+          updateCartCount();
         })
         .catch(() => {
           toggleAuthModal();
@@ -384,29 +500,107 @@
     }
 
     function updateCartModal() {
-      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      const cartList = document.getElementById('cartItems');
+        cartItems = JSON.parse(localStorage.getItem('cart') || '[]');
+
+      const container = document.getElementById('cartItemsContainer');
       const totalText = document.getElementById('total');
-      cartList.innerHTML = '';
+      const positionText = document.getElementById('currentPosition');
+      const prevBtn = document.getElementById('prevItem');
+      const nextBtn = document.getElementById('nextItem');
+      
+      container.innerHTML = '';
       let total = 0;
 
-      if (cart.length === 0) {
-        cartList.innerHTML = '<li class="text-gray-400">Кошик порожній</li>';
+      if (cartItems.length === 0) {
+        container.innerHTML = '<div class="w-full flex-shrink-0 flex items-center justify-center text-gray-400">Кошик порожній</div>';
         totalText.textContent = '';
+        positionText.textContent = '0/0';
+        checkoutBtn.classList.add('hidden');
+        prevBtn.classList.add('hidden');
+        nextBtn.classList.add('hidden');
       } else {
-        cart.forEach(item => {
-          const li = document.createElement('li');
-          li.textContent = `${item.name} — ${item.price} грн`;
-          cartList.appendChild(li);
+        cartItems.forEach((item, index) => {
+          const itemElement = document.createElement('div');
+          itemElement.className = 'w-full flex-shrink-0 px-2 h-full';
+          itemElement.innerHTML = `
+            <div class="bg-cosmic-700 p-4 rounded-lg h-full flex flex-col">
+              <h3 class="text-xl font-bold text-neon-cyan mb-2">${item.name}</h3>
+              <p class="text-gray-300 mb-4">Ціна: ${item.price} грн</p>
+              <img src="/images/${item.name.toLowerCase().replace(' ', '')}.jpg" alt="${item.name}" class="w-full h-32 object-cover rounded-lg mb-4">
+              <button onclick="removeFromCart(${index})" class="mt-auto px-3 py-1 bg-neon-pink text-cosmic-900 text-sm rounded hover:bg-neon-cyan transition">
+                Видалити
+              </button>
+            </div>
+          `;
+          container.appendChild(itemElement);
           total += item.price;
         });
+
         totalText.textContent = `Загалом: ${total} грн`;
+        positionText.textContent = `${currentItemIndex + 1}/${cartItems.length}`;
+        checkoutBtn.classList.remove('hidden');
+        
+        // Показуємо/ховаємо кнопки навігації
+        prevBtn.classList.toggle('hidden', cartItems.length <= 1);
+        nextBtn.classList.toggle('hidden', cartItems.length <= 1);
+        
+        // Оновлюємо позицію елементів
+        updateCartItemsPosition();
+      }
+    }
+
+    function updateCartItemsPosition() {
+      const container = document.getElementById('cartItemsContainer');
+      container.style.transform = `translateX(-${currentItemIndex * 100}%)`;
+      document.getElementById('currentPosition').textContent = `${currentItemIndex + 1}/${cartItems.length}`;
+    }
+
+    // Функції для гортання товарів
+    document.getElementById('nextItem').addEventListener('click', () => {
+      if (currentItemIndex < cartItems.length - 1) {
+        currentItemIndex++;
+        updateCartItemsPosition();
+      }
+    });
+
+    document.getElementById('prevItem').addEventListener('click', () => {
+      if (currentItemIndex > 0) {
+        currentItemIndex--;
+        updateCartItemsPosition();
+      }
+    });
+
+    // Функція для видалення товару з кошика
+    function removeFromCart(index) {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      cart.splice(index, 1);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      
+      // Оновлюємо індекс, якщо видаляємо поточний елемент
+      if (currentItemIndex >= cart.length) {
+        currentItemIndex = Math.max(0, cart.length - 1);
+      }
+      
+      updateCartModal();
+      updateCartCount();
+    }
+
+    function updateCartCount() {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      
+      if (cart.length > 0) {
+        cartCount.textContent = cart.length;
+        cartCount.classList.remove('hidden');
+      } else {
+        cartCount.classList.add('hidden');
       }
     }
 
     function clearCart() {
       localStorage.removeItem('cart');
+      currentItemIndex = 0;
       updateCartModal();
+      updateCartCount();
     }
 
     function proceedToCheckout() {
@@ -414,11 +608,16 @@
         .then((user) => {
           const cart = JSON.parse(localStorage.getItem('cart') || '[]');
           if (cart.length === 0) {
-            alert('Кошик порожній!');
+            showError('Кошик порожній!');
             return;
           }
-          // Тут можна додати логіку оформлення замовлення
-          alert(`Замовлення оформлено! Дякуємо, ${user.displayName || user.email.split('@')[0]}!`);
+          
+          const total = cart.reduce((sum, item) => sum + item.price, 0);
+          alert(`Замовлення на суму ${total} грн оформлено!\nДякуємо, ${user.displayName || user.email.split('@')[0]}!`);
+          
+          // Тут можна додати відправку замовлення на сервер
+          // Наприклад: sendOrderToServer(user.uid, cart, total);
+          
           clearCart();
           toggleCart();
         })
