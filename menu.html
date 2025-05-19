@@ -83,8 +83,26 @@
     // Ініціалізація Firebase
     firebase.initializeApp(firebaseConfig);
   </script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
 </head>
 <body class="bg-cosmic-900 text-gray-100 font-sans overflow-x-hidden">
+
+
+
+<div class="container mx-auto my-8 max-w-lg bg-cosmic-800 rounded-xl p-6 shadow-lg">
+  <h2 class="text-2xl font-bold text-neon-cyan mb-4">Додати товар у меню</h2>
+  <form id="addProductForm" class="space-y-4">
+    <input type="text" id="productName" placeholder="Назва товару" required class="w-full p-2 rounded bg-cosmic-900 border border-neon-cyan text-white focus:outline-none" />
+    <input type="number" id="productPrice" placeholder="Ціна" required class="w-full p-2 rounded bg-cosmic-900 border border-neon-cyan text-white focus:outline-none" />
+    <input type="text" id="productImage" placeholder="Назва файлу зображення (наприклад, latte.jpg)" required class="w-full p-2 rounded bg-cosmic-900 border border-neon-cyan text-white focus:outline-none" />
+    <input type="text" id="productDesc" placeholder="Опис" required class="w-full p-2 rounded bg-cosmic-900 border border-neon-cyan text-white focus:outline-none" />
+    <button type="submit" class="w-full bg-neon-cyan text-black font-bold py-2 rounded-full hover:bg-neon-pink transition">Додати</button>
+    <div id="addProductMsg" class="text-neon-pink mt-2"></div>
+  </form>
+</div>
+
+
+
 
   <!-- Хедер -->
   <header class="fixed top-0 left-0 w-full z-50 bg-cosmic-900/80 backdrop-blur-lg border-b border-neon-cyan/20">
@@ -638,6 +656,170 @@
         }
       });
     }
-  </script>
+
+
+
+
+
+
+
+      // Firestore ініціалізація
+  const db = firebase.firestore();
+
+  // Додавання товару через форму
+  document.getElementById('addProductForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const name = document.getElementById('productName').value.trim();
+    const price = Number(document.getElementById('productPrice').value);
+    const image = document.getElementById('productImage').value.trim();
+    const description = document.getElementById('productDesc').value.trim();
+    const msg = document.getElementById('addProductMsg');
+
+    if (!name || !price || !image || !description) {
+      msg.textContent = 'Заповніть всі поля!';
+      return;
+    }
+
+    try {
+      await db.collection('products').add({
+        name,
+        price,
+        image,
+        description,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      msg.textContent = 'Товар додано!';
+      this.reset();
+    } catch (error) {
+      msg.textContent = 'Помилка: ' + error.message;
+    }
+  });
+
+
+
+
+
+
+  // ДОДАЙТЕ ЦЕ ВНИЗУ ВАШОГО <script> (після ініціалізації Firestore)
+
+async function addInitialProducts() {
+  const products = [
+    {
+      name: "Лате",
+      price: 65,
+      image: "latte.jpg",
+      description: "Ніжна кава з молоком"
+    },
+    {
+      name: "Капучино",
+      price: 60,
+      image: "cappuccino.jpg",
+      description: "Класична кава з пінкою"
+    },
+    {
+      name: "Еспресо",
+      price: 55,
+      image: "espresso.jpg",
+      description: "Міцна кава для справжніх поціновувачів"
+    },
+    {
+      name: "Американо",
+      price: 50,
+      image: "americano.jpg",
+      description: "Розбавлений еспресо, м'який смак"
+    },
+    {
+      name: "Мокачино",
+      price: 70,
+      image: "mocha.jpg",
+      description: "Кава з шоколадом"
+    },
+    {
+      name: "Флет Вайт",
+      price: 65,
+      image: "flatwhite.jpg",
+      description: "Ідеальний баланс еспресо і молока"
+    },
+    {
+      name: "Раф кава",
+      price: 75,
+      image: "raf.jpg",
+      description: "Кава з вершками та ваніллю"
+    },
+    {
+      name: "Cold Brew",
+      price: 80,
+      image: "coldbrew.jpg",
+      description: "Холодна кава тривалого настоювання"
+    },
+    {
+      name: "Тірамісу",
+      price: 85,
+      image: "tiramisu.jpg",
+      description: "Найпопулярніший італійський десерт"
+    },
+    {
+      name: "Чізкейк",
+      price: 80,
+      image: "cheesecake.jpg",
+      description: "Класичний ванільний чізкейк"
+    }
+  ];
+
+  for (const product of products) {
+    await db.collection('products').add({
+      ...product,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  }
+  alert('Товари додано!');
+}
+
+// Викличте цю функцію один раз для додавання товарів
+// addInitialProducts(); // Викликайте цю функцію лише один раз вручну для ініціалізації товарів
+ 
+ 
+ 
+ 
+ 
+ function proceedToCheckout() {
+  checkAuthBeforeOrder()
+    .then((user) => {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      if (cart.length === 0) {
+        showError('Кошик порожній!');
+        return;
+      }
+
+      const total = cart.reduce((sum, item) => sum + item.price, 0);
+
+      // Додаємо замовлення у Firestore
+      db.collection('orders').add({
+        userId: user.uid,
+        userEmail: user.email,
+        items: cart,
+        total,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      })
+      .then(() => {
+        alert(`Замовлення на суму ${total} грн оформлено!\nДякуємо, ${user.displayName || user.email.split('@')[0]}!`);
+        clearCart();
+        toggleCart();
+      })
+      .catch((error) => {
+        showError('Помилка при оформленні замовлення: ' + error.message);
+      });
+    })
+    .catch(() => {
+      toggleAuthModal();
+      toggleCart();
+    });
+}
+ 
+ 
+ 
+ 
+ 
+ </script>
 </body>
 </html>
